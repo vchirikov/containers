@@ -1,0 +1,9 @@
+.git
+.github
+.editorconfig
+readme.md
+version.json
+Dockerfile
+.gitignore
+.gitattributes
+.env

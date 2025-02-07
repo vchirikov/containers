@@ -1,0 +1,119 @@
+name: Publish
+concurrency:
+  group: ${{ github.workflow }}-${{ inputs.ref || github.event.pull_request.head.ref || github.ref }}
+  cancel-in-progress: true
+permissions: write-all
+defaults:
+  run:
+    shell: bash
+on: workflow_dispatch
+jobs:
+  publish:
+    timeout-minutes: 45
+    name: Publish
+    runs-on: ubuntu-latest
+    # I don't use matrix to parallel builds, but you can
+    steps:
+      - name: git checkout / on non-'workflow_call'
+        uses: actions/checkout@v4
+        with:
+          clean: false
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Forward env variables & checkout fixes
+        id: gh
+        run: |
+          echo -n "" > .env
+          env | grep -E '^(GITHUB_|CI)' | grep -E GITHUB_SHA= --invert-match | grep -E GITHUB_REF= --invert-match >> $GITHUB_ENV
+          env | grep -E '^(GITHUB_|CI)' | grep -E GITHUB_SHA= --invert-match | grep -E GITHUB_REF= --invert-match >> .env
+          sha=$(git rev-parse HEAD)
+          echo "GITHUB_SHA=$sha" >> $GITHUB_ENV
+          echo "GITHUB_SHA=$sha" >> .env
+          branch=$(git rev-parse --abbrev-ref HEAD)
+          echo "GITHUB_REF=refs/heads/$branch" >> $GITHUB_ENV
+          echo "GITHUB_REF=refs/heads/$branch" >> .env
+          echo -e "\033[38;5;99;5;16msha: $sha\033[0m"
+          echo -e "\033[38;5;99;5;16mbranch: $branch\033[0m"
+          echo "sha=$sha" >> $GITHUB_OUTPUT
+          echo "branch=$branch" >> $GITHUB_OUTPUT
+
+      - name: Generate version
+        id: nbgv
+        uses: actions/github-script@v7
+        with:
+          script: |-
+            const path = require('path');
+            const os = require('os');
+            process.env.GITHUB_REF='refs/heads/${{ steps.gh.outputs.branch }}';
+            process.env.GITHUB_SHA='${{ steps.gh.outputs.sha }}';
+            try {
+              // install nbgv isn' required
+              // the image includes nbgv [actions/runner-images](https://github.com/actions/runner-images)
+
+              // collect a JSON string of all the version properties.
+              let versionJson = '';
+              await exec.exec('nbgv', ['get-version', '-f', 'json'], { listeners: { stdout: (data) => { versionJson += data.toString() } } });
+              core.setOutput('versionJson', versionJson);
+
+              // break up the JSON into individual outputs.
+              const versionProperties = JSON.parse(versionJson);
+              for (let name in versionProperties.CloudBuildAllVars) {
+                // Trim off the leading NBGV_
+                core.setOutput(name.substring(5), versionProperties.CloudBuildAllVars[name]);
+              }
+              await exec.exec('nbgv', ['cloud', '-a']);
+            }
+            catch (error) {
+              core.setFailed(error.message);
+            }
+
+      - name: Print version
+        run: |-
+          echo "SemVer2 ${{ steps.nbgv.outputs.SemVer2 }}"
+
+      - name: Verify the public branch name matches version.json
+        if: ${{ github.event_name == 'push' && steps.nbgv.outputs.PublicRelease == 'True' && endsWith(github.ref, steps.nbgv.outputs.MajorMinorVersion) != true && steps.gh.outputs.branch != 'master' }}
+        run: |
+          echo "::error::The branch name ${{ steps.gh.outputs.branch }} does not match version.json: ${{ steps.nbgv.outputs.MajorMinorVersion }}"
+          exit 1
+
+      - name: Verify that non-public branch has a prerelease suffix in version.json
+        if: ${{ steps.nbgv.outputs.PublicRelease == 'False' && steps.nbgv.outputs.PrereleaseVersionNoLeadingHyphen == '' }}
+        run: |
+          echo "::error::The non-public branch ${{ steps.gh.outputs.branch }} must have a prerelease suffix in version.json: ${{ steps.nbgv.outputs.MajorMinorVersion }}"
+          exit 1
+
+      - name: Verify that master branch has a prerelease suffix in version.json
+        if: ${{ steps.gh.outputs.branch == 'master' && steps.nbgv.outputs.PrereleaseVersionNoLeadingHyphen == '' }}
+        run: |
+          echo "::error::The master branch ${{ steps.gh.outputs.branch }} must have a prerelease suffix in version.json: ${{ steps.nbgv.outputs.MajorMinorVersion }}"
+          exit 1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: docker build & publish
+        id: publish
+        run: |-
+          echo -e "\033[32mBuild & publish app\033[0m"
+          docker buildx build --file Dockerfile . \
+          --platform=linux/amd64,linux/arm64 \
+          --build-arg IMAGE_CREATED=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
+          --build-arg IMAGE_REVISION=${{ steps.gh.outputs.sha }} \
+          --build-arg IMAGE_VERSION=${{ steps.nbgv.outputs.SemVer2 }} \
+          --build-arg IMAGE_REVISION=${{ steps.gh.outputs.sha }} \
+          --build-arg IMAGE_REVISION=${{ steps.gh.outputs.sha }} \
+          --provenance=false \
+          --compress \
+          --push \
+          -t ghcr.io/vchirikov/act-dotnet-bookworm-slim:${{ steps.nbgv.outputs.SemVer2 }}
