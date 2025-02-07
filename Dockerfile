@@ -52,10 +52,11 @@ RUN case ${TARGETPLATFORM} in \
 
 
 ### install nvm & nodejs
+# https://github.com/nodejs/node/tags
 # renovate: datasource=github-releases depName=nodejs/node
-ARG NODE_VERSION=23.7.0
+ARG NODE_VERSION=23.6.1
 # renovate: datasource=github-releases depName=nvm-sh/nvm
-ARG NVM_VERSION=v0.40.1
+ARG NVM_VERSION=v0.40.0
 
 RUN curl https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh | bash \
     && . $NVM_DIR/nvm.sh \
@@ -75,7 +76,7 @@ RUN apt update -yq \
     unzip
 
 ### install docker
-# https://github.com/docker/buildx/releases
+# https://github.com/docker/buildx/tags
 # renovate: datasource=github-releases depName=docker/buildx
 ARG BUILDX_VERSION=v0.20.1
 # https://docs.docker.com/engine/release-notes
