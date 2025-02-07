@@ -69,7 +69,7 @@ RUN apt update -yq \
     && apt install -yq --no-install-recommends --no-install-suggests \
     sudo \
     lsb-release \
-    ssh \
+    openssh-client \
     jq \
     zip \
     unzip
