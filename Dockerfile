@@ -105,13 +105,13 @@ RUN adduser --disabled-password --gecos "" --uid 1001 runner \
     && echo "Defaults env_keep += \"DEBIAN_FRONTEND\"" >> /etc/sudoers
 
 ### install dotnet tools
-# renovate: datasource=nuget depName=efcore
+# renovate: datasource=nuget depName=dotnet-ef
 ARG DOTNET_TOOL_EF_VERSION=9.0.1
 # renovate: datasource=nuget depName=nbgv
 ARG DOTNET_TOOL_NBGV_VERSION=3.7.115
 # renovate: datasource=nuget depName=nswag.consolecore
 ARG DOTNET_TOOL_NSWAG_VERSION=14.2.0
-RUN dotnet tool install -g efcore --version ${DOTNET_TOOL_EF_VERSION} && \
+RUN dotnet tool install -g dotnet-ef --version ${DOTNET_TOOL_EF_VERSION} && \
   dotnet tool install -g nbgv --version ${DOTNET_TOOL_NBGV_VERSION} && \
   dotnet tool install -g nswag.consolecore --version ${DOTNET_TOOL_NSWAG_VERSION}
 
