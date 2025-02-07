@@ -29,9 +29,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 ENV PATH=${DOTNET_ROOT}:${DOTNET_ROOT}/tools:${NVM_DIR}/:${NVM_DIR}/versions/node/v${NODE_VERSION}/bin/:${PATH}
 
-SHELL [ "/bin/bash", "--login", "-e", "-o", "pipefail", "-c" ]
 WORKDIR /tmp
-
 ### install git-lfs
 # renovate: datasource=github-releases depName=git-lfs/git-lfs
 ARG GIT_LFS_VERSION=3.6.1
