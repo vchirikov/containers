@@ -34,16 +34,16 @@ ENV PATH=${DOTNET_ROOT}:${DOTNET_ROOT}/tools:${NVM_DIR}/:${NVM_DIR}/versions/nod
 WORKDIR /tmp
 ### install git-lfs
 # renovate: datasource=github-releases depName=git-lfs/git-lfs
-ARG GIT_LFS_VERSION=3.6.1
-# multi-architecture from buildx, and defaults if buildx not available
-ARG TARGETPLATFORM=linux/amd64
+ARG GIT_LFS_VERSION=v3.6.1
+ARG TARGETPLATFORM
 RUN case ${TARGETPLATFORM} in \
         "linux/amd64") GIT_LFS_ARCH=amd64 ;; \
         "linux/arm64" | "linux/arm/v8") GIT_LFS_ARCH=arm64 ;; \
         "linux/arm/v7") GIT_LFS_ARCH=arm ;; \
         *) echo 'unsupported target platform' ; exit 1; ;; \
     esac && \
-    curl -L -s --output git-lfs.tar.gz "https://github.com/git-lfs/git-lfs/releases/download/v${GIT_LFS_VERSION}/git-lfs-linux-${GIT_LFS_ARCH}-v${GIT_LFS_VERSION}.tar.gz" && \
+    echo "Installing git-lfs for ${TARGETPLATFORM}" && \
+    curl -L -s --output git-lfs.tar.gz "https://github.com/git-lfs/git-lfs/releases/download/${GIT_LFS_VERSION}/git-lfs-linux-${GIT_LFS_ARCH}-${GIT_LFS_VERSION}.tar.gz" && \
     tar --strip-components=1 -xf git-lfs.tar.gz && \
     chmod +x git-lfs && \
     rm git-lfs.tar.gz && \
@@ -81,8 +81,7 @@ ARG BUILDX_VERSION=v0.20.1
 # https://docs.docker.com/engine/release-notes
 # renovate: datasource=docker depName=docker.io/docker versioning=docker
 ARG DOCKER_VERSION=27.5.1
-# multi-architecture from buildx, and defaults if buildx not available
-ARG TARGETPLATFORM=linux/amd64
+ARG TARGETPLATFORM
 RUN case ${TARGETPLATFORM} in \
         "linux/amd64") DOCKER_ARCH='x86_64'; DOCKERX_ARCH='amd64'; ;; \
         "linux/arm64" | "linux/arm/v8") DOCKER_ARCH='aarch64'; DOCKERX_ARCH='arm64'; ;; \
