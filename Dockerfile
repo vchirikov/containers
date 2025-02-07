@@ -56,7 +56,7 @@ RUN case ${TARGETPLATFORM} in \
 # renovate: datasource=github-releases depName=nodejs/node
 ARG NODE_VERSION=23.6.1
 # renovate: datasource=github-releases depName=nvm-sh/nvm
-ARG NVM_VERSION=v0.40.0
+ARG NVM_VERSION=v0.40.1
 
 RUN curl https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh | bash \
     && . $NVM_DIR/nvm.sh \
