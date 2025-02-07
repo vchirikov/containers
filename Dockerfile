@@ -54,7 +54,7 @@ RUN case ${TARGETPLATFORM} in \
 ### install nvm & nodejs
 # https://github.com/nodejs/node/tags
 # renovate: datasource=github-releases depName=nodejs/node
-ARG NODE_VERSION=23.6.1
+ARG NODE_VERSION=23.7.0
 # renovate: datasource=github-releases depName=nvm-sh/nvm
 ARG NVM_VERSION=v0.40.1
 
