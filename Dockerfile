@@ -4,7 +4,7 @@
 ARG DOTNET_SDK_VERSION=9.0.102
 
 # https://mcr.microsoft.com/en-us/artifact/mar/dotnet/sdk/tags
-FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_SDK_VERSION}-bookworm-slim as base
+FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_SDK_VERSION}-bookworm-slim
 ENV DEBIAN_FRONTEND=noninteractive \
     ASTRO_TELEMETRY_DISABLED=1 \
     NEXT_TELEMETRY_DISABLED=1 \
@@ -27,6 +27,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     BUILDKIT_PROGRESS=plain \
     DOCKER_BUILDKIT=1
 
+# renovate: datasource=github-releases depName=nodejs/node
+ENV NODE_VERSION=23.7.0
 ENV PATH=${DOTNET_ROOT}:${DOTNET_ROOT}/tools:${NVM_DIR}/:${NVM_DIR}/versions/node/v${NODE_VERSION}/bin/:${PATH}
 
 WORKDIR /tmp
@@ -44,6 +46,7 @@ RUN case ${TARGETPLATFORM} in \
     curl -L -s --output git-lfs.tar.gz "https://github.com/git-lfs/git-lfs/releases/download/v${GIT_LFS_VERSION}/git-lfs-linux-${GIT_LFS_ARCH}-v${GIT_LFS_VERSION}.tar.gz" && \
     tar --strip-components=1 -xf git-lfs.tar.gz && \
     chmod +x git-lfs && \
+    rm git-lfs.tar.gz && \
     mv git-lfs /usr/bin/git-lfs && \
     git-lfs --version
 
@@ -54,10 +57,10 @@ ARG NODE_VERSION=23.7.0
 # renovate: datasource=github-releases depName=nvm-sh/nvm
 ARG NVM_VERSION=v0.40.1
 
-RUN curl https://raw.githubusercontent.com/nvm-sh/nvm/v${NVM_VERSION}/install.sh | bash \
+RUN curl https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh | bash \
     && . $NVM_DIR/nvm.sh \
-    && nvm install $NODE_VERSION \
-    && nvm alias default $NODE_VERSION \
+    && nvm install ${NODE_VERSION} \
+    && nvm alias default ${NODE_VERSION} \
     && nvm use default \
     && node --version && npm --version && npx --version
 
@@ -72,18 +75,24 @@ RUN apt update -yq \
     unzip
 
 ### install docker
-ARG TARGETOS=linux
 # https://github.com/docker/buildx/releases
 # renovate: datasource=github-releases depName=docker/buildx
-ENV BUILDX_VERSION=v0.20.1
+ARG BUILDX_VERSION=v0.20.1
 # https://docs.docker.com/engine/release-notes
 # renovate: datasource=docker depName=docker.io/docker versioning=docker
-ENV DOCKER_VERSION=27.5.1
-RUN export RUNNER_ARCH=${TARGETARCH} && \
-    if [ "$RUNNER_ARCH" = "amd64" ]; then export DOCKER_ARCH=x86_64 ; fi && \
-    if [ "$RUNNER_ARCH" = "arm64" ]; then export DOCKER_ARCH=aarch64 ; fi && \
-    curl -fLs https://download.docker.com/${TARGETOS}/static/stable/${DOCKER_ARCH}/docker-${DOCKER_VERSION}.tgz | tar xvz -C /opt && \
-    curl -fLo /usr/local/lib/docker/cli-plugins/docker-buildx "https://github.com/docker/buildx/releases/download/v${BUILDX_VERSION}/buildx-v${BUILDX_VERSION}.linux-${TARGETARCH}" --create-dirs && \
+ARG DOCKER_VERSION=27.5.1
+# multi-architecture from buildx, and defaults if buildx not available
+ARG TARGETPLATFORM=linux/amd64
+RUN case ${TARGETPLATFORM} in \
+        "linux/amd64") DOCKER_ARCH='x86_64'; DOCKERX_ARCH='amd64'; ;; \
+        "linux/arm64" | "linux/arm/v8") DOCKER_ARCH='aarch64'; DOCKERX_ARCH='arm64'; ;; \
+        "linux/arm/v7") DOCKER_ARCH='armhf'; DOCKERX_ARCH='arm-v7'; ;; \
+        *) echo 'unsupported target platform' ; exit 1; ;; \
+    esac && \
+    echo "installing docker ${DOCKER_VERSION}-${DOCKER_ARCH}" && \
+    curl -fLs https://download.docker.com/linux/static/stable/${DOCKER_ARCH}/docker-${DOCKER_VERSION}.tgz | tar xvz -C /opt && \
+    echo "installing buildx: ${BUILDX_VERSION}-${DOCKERX_ARCH} " && \
+    curl -fLo /usr/local/lib/docker/cli-plugins/docker-buildx "https://github.com/docker/buildx/releases/download/${BUILDX_VERSION}/buildx-${BUILDX_VERSION}.linux-${DOCKERX_ARCH}" --create-dirs && \
     ln -s /opt/docker/docker /usr/bin/docker && \
     chmod -R 755 "/usr/local/lib/docker" && \
     docker -v && docker buildx version

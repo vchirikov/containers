@@ -111,8 +111,6 @@ jobs:
           --build-arg IMAGE_CREATED=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
           --build-arg IMAGE_REVISION=${{ steps.gh.outputs.sha }} \
           --build-arg IMAGE_VERSION=${{ steps.nbgv.outputs.SemVer2 }} \
-          --build-arg IMAGE_REVISION=${{ steps.gh.outputs.sha }} \
-          --build-arg IMAGE_REVISION=${{ steps.gh.outputs.sha }} \
           --provenance=false \
           --compress \
           --push \
