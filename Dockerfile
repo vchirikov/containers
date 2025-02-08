@@ -29,7 +29,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 # renovate: datasource=github-releases depName=nodejs/node
 ENV NODE_VERSION=23.7.0
-ENV PATH=${DOTNET_ROOT}:${DOTNET_ROOT}/tools:${NVM_DIR}/:${NVM_DIR}/versions/node/v${NODE_VERSION}/bin/:${PATH}
+ENV PATH=${DOTNET_ROOT}:${DOTNET_ROOT}/tools:${NVM_DIR}/:${NVM_DIR}/versions/node/v${NODE_VERSION}/bin/:$HOME/.local/bin:${PATH}
 
 WORKDIR /tmp
 ### install git-lfs
@@ -81,6 +81,9 @@ ARG BUILDX_VERSION=v0.20.1
 # https://docs.docker.com/engine/release-notes
 # renovate: datasource=docker depName=docker.io/docker versioning=docker
 ARG DOCKER_VERSION=27.5.1
+# https://github.com/docker/compose/releases
+# renovate: datasource=docker depName=docker.io/docker versioning=docker
+ARG DOCKER_COMPOSE_VERSION=v2.32.4
 ARG TARGETPLATFORM
 RUN case ${TARGETPLATFORM} in \
         "linux/amd64") DOCKER_ARCH='x86_64'; DOCKERX_ARCH='amd64'; ;; \
@@ -89,20 +92,14 @@ RUN case ${TARGETPLATFORM} in \
         *) echo 'unsupported target platform' ; exit 1; ;; \
     esac && \
     echo "installing docker ${DOCKER_VERSION}-${DOCKER_ARCH}" && \
-    curl -fLs https://download.docker.com/linux/static/stable/${DOCKER_ARCH}/docker-${DOCKER_VERSION}.tgz | tar xvz -C /opt && \
+    curl -fLs https://download.docker.com/linux/static/stable/${DOCKER_ARCH}/docker-${DOCKER_VERSION}.tgz | tar xvz --directory /usr/local/bin/ && \
     echo "installing buildx: ${BUILDX_VERSION}-${DOCKERX_ARCH} " && \
     curl -fLo /usr/local/lib/docker/cli-plugins/docker-buildx "https://github.com/docker/buildx/releases/download/${BUILDX_VERSION}/buildx-${BUILDX_VERSION}.linux-${DOCKERX_ARCH}" --create-dirs && \
-    ln -s /opt/docker/docker /usr/bin/docker && \
+    curl -fLo /usr/local/lib/docker/cli-plugins/docker-compose "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-linux-${BUILDX_VERSION}.linux-${DOCKER_ARCH}" --create-dirs && \
     chmod -R 755 "/usr/local/lib/docker" && \
-    docker -v && docker buildx version
+    ln -sv usr/local/lib/docker/cli-plugins/docker-compose /usr/local/bin/; && \
+    docker -v && docker buildx version && docker compose version
 
-
-RUN adduser --disabled-password --gecos "" --uid 1001 runner \
-    && groupadd docker --gid 123 \
-    && usermod -aG sudo runner \
-    && usermod -aG docker runner \
-    && echo "%sudo   ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers \
-    && echo "Defaults env_keep += \"DEBIAN_FRONTEND\"" >> /etc/sudoers
 
 ### install dotnet tools
 # renovate: datasource=nuget depName=dotnet-ef
@@ -119,9 +116,6 @@ RUN dotnet tool install -g dotnet-ef --version ${DOTNET_TOOL_EF_VERSION} && \
 ### cleanup
 RUN apt-get clean \
     && rm -rf /var/cache/* /var/log/* /var/lib/apt/lists/* /tmp/* || echo 'Failed to cleanup docker image'
-
-
-USER runner
 
 ARG IMAGE_CREATED=2025-01-01T00:00:00Z
 ARG IMAGE_VERSION=0.1
