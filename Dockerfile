@@ -83,7 +83,7 @@ ARG BUILDX_VERSION=v0.20.1
 ARG DOCKER_VERSION=27.5.1
 # https://github.com/docker/compose/releases
 # renovate: datasource=docker depName=docker.io/docker versioning=docker
-ARG DOCKER_COMPOSE_VERSION=v2.32.4
+ARG DOCKER_COMPOSE_VERSION=27.5.1
 ARG TARGETPLATFORM
 RUN case ${TARGETPLATFORM} in \
         "linux/amd64") DOCKER_ARCH='x86_64'; DOCKERX_ARCH='amd64'; ;; \
