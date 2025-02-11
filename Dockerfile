@@ -108,7 +108,7 @@ EOF
 
 ### install dotnet tools
 # renovate: datasource=nuget depName=dotnet-ef
-ARG DOTNET_TOOL_EF_VERSION=9.0.1
+ARG DOTNET_TOOL_EF_VERSION=9.0.2
 # renovate: datasource=nuget depName=nbgv
 ARG DOTNET_TOOL_NBGV_VERSION=3.7.115
 # renovate: datasource=nuget depName=nswag.consolecore
