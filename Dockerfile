@@ -32,7 +32,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 # renovate: datasource=github-releases depName=nodejs/node
 ENV NODE_VERSION=23.7.0
-ENV PATH=${DOTNET_ROOT}:${DOTNET_ROOT}/tools:${NVM_DIR}/:${NVM_DIR}/versions/node/v${NODE_VERSION}/bin/:/root/.local/bin:${PATH}
+ENV PATH=${DOTNET_ROOT}:${DOTNET_ROOT}/tools:${NVM_DIR}/:${NVM_DIR}/versions/node/v${NODE_VERSION}/bin/:/root/.local/bin:/root/.dotnet/tools:${PATH}
 
 WORKDIR /tmp
 ### install git-lfs
