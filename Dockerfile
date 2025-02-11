@@ -96,16 +96,14 @@ RUN <<EOF
     *) echo 'unsupported target platform' ; exit 1; ;;
   esac
   echo "installing docker ${DOCKER_VERSION}-${DOCKER_ARCH}"
-  curl -fLs https://download.docker.com/linux/static/stable/${DOCKER_ARCH}/docker-${DOCKER_VERSION}.tgz | tar xvz --directory /usr/local/bin/
-  chmod 755 /usr/local/bin/docker
-  echo "installing buildx: ${BUILDX_VERSION}-${DOCKERX_ARCH} "
+  curl -fLs https://download.docker.com/linux/static/stable/${DOCKER_ARCH}/docker-${DOCKER_VERSION}.tgz | tar xvz --strip-components=1 --directory /usr/local/bin/
+  echo "installing buildx: ${BUILDX_VERSION}-${DOCKERX_ARCH}"
   curl -fLo /usr/local/lib/docker/cli-plugins/docker-buildx "https://github.com/docker/buildx/releases/download/${BUILDX_VERSION}/buildx-${BUILDX_VERSION}.linux-${DOCKERX_ARCH}" --create-dirs
   echo "installing compose: ${DOCKER_COMPOSE_VERSION}-${DOCKER_ARCH} "
   curl -fLo /usr/local/lib/docker/cli-plugins/docker-compose "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-linux-${DOCKER_ARCH}" --create-dirs
   chmod -R 775 "/usr/local/lib/docker" && \
   ln -sv usr/local/lib/docker/cli-plugins/docker-compose /usr/local/bin/ && \
   docker -v && docker buildx version && docker compose version
-
 EOF
 
 ### install dotnet tools
