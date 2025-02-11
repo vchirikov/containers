@@ -1,4 +1,7 @@
 # syntax=docker/dockerfile:1
+# see https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/reference.md#syntax
+# see https://docs.docker.com/build/dockerfile/frontend/
+# see https://docs.docker.com/engine/reference/builder/#syntax
 
 # renovate: datasource=github-releases depName=dotnet/sdk
 ARG DOTNET_SDK_VERSION=9.0.102
@@ -85,22 +88,25 @@ ARG DOCKER_VERSION=27.5.1
 # renovate: datasource=github-releases depName=docker/compose
 ARG DOCKER_COMPOSE_VERSION=v2.32.4
 ARG TARGETPLATFORM
-RUN case ${TARGETPLATFORM} in \
-        "linux/amd64") DOCKER_ARCH='x86_64'; DOCKERX_ARCH='amd64'; ;; \
-        "linux/arm64" | "linux/arm/v8") DOCKER_ARCH='aarch64'; DOCKERX_ARCH='arm64'; ;; \
-        "linux/arm/v7") DOCKER_ARCH='armhf'; DOCKERX_ARCH='arm-v7'; ;; \
-        *) echo 'unsupported target platform' ; exit 1; ;; \
-    esac && \
-    echo "installing docker ${DOCKER_VERSION}-${DOCKER_ARCH}" && \
-    curl -fLs https://download.docker.com/linux/static/stable/${DOCKER_ARCH}/docker-${DOCKER_VERSION}.tgz | tar xvz --directory /usr/local/bin/ && \
-    echo "installing buildx: ${BUILDX_VERSION}-${DOCKERX_ARCH} " && \
-    curl -fLo /usr/local/lib/docker/cli-plugins/docker-buildx "https://github.com/docker/buildx/releases/download/${BUILDX_VERSION}/buildx-${BUILDX_VERSION}.linux-${DOCKERX_ARCH}" --create-dirs && \
-    echo "installing compose: ${DOCKER_COMPOSE_VERSION}-${DOCKER_ARCH} " && \
-    curl -fLo /usr/local/lib/docker/cli-plugins/docker-compose "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-linux-${DOCKER_ARCH}" --create-dirs && \
-    chmod -R 755 "/usr/local/lib/docker" && \
-    ln -sv usr/local/lib/docker/cli-plugins/docker-compose /usr/local/bin/ && \
-    docker -v && docker buildx version && docker compose version
+RUN <<EOF
+  case ${TARGETPLATFORM} in
+    "linux/amd64") DOCKER_ARCH='x86_64'; DOCKERX_ARCH='amd64'; ;;
+    "linux/arm64" | "linux/arm/v8") DOCKER_ARCH='aarch64'; DOCKERX_ARCH='arm64'; ;;
+    "linux/arm/v7") DOCKER_ARCH='armhf'; DOCKERX_ARCH='arm-v7'; ;;
+    *) echo 'unsupported target platform' ; exit 1; ;;
+  esac
+  echo "installing docker ${DOCKER_VERSION}-${DOCKER_ARCH}"
+  curl -fLs https://download.docker.com/linux/static/stable/${DOCKER_ARCH}/docker-${DOCKER_VERSION}.tgz | tar xvz --directory /usr/local/bin/
+  chmod 755 /usr/local/bin/docker
+  echo "installing buildx: ${BUILDX_VERSION}-${DOCKERX_ARCH} "
+  curl -fLo /usr/local/lib/docker/cli-plugins/docker-buildx "https://github.com/docker/buildx/releases/download/${BUILDX_VERSION}/buildx-${BUILDX_VERSION}.linux-${DOCKERX_ARCH}" --create-dirs
+  echo "installing compose: ${DOCKER_COMPOSE_VERSION}-${DOCKER_ARCH} "
+  curl -fLo /usr/local/lib/docker/cli-plugins/docker-compose "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-linux-${DOCKER_ARCH}" --create-dirs
+  chmod -R 775 "/usr/local/lib/docker" && \
+  ln -sv usr/local/lib/docker/cli-plugins/docker-compose /usr/local/bin/ && \
+  docker -v && docker buildx version && docker compose version
 
+EOF
 
 ### install dotnet tools
 # renovate: datasource=nuget depName=dotnet-ef
