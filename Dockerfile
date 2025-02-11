@@ -96,7 +96,7 @@ RUN case ${TARGETPLATFORM} in \
     echo "installing buildx: ${BUILDX_VERSION}-${DOCKERX_ARCH} " && \
     curl -fLo /usr/local/lib/docker/cli-plugins/docker-buildx "https://github.com/docker/buildx/releases/download/${BUILDX_VERSION}/buildx-${BUILDX_VERSION}.linux-${DOCKERX_ARCH}" --create-dirs && \
     echo "installing compose: ${DOCKER_COMPOSE_VERSION}-${DOCKER_ARCH} " && \
-    curl -fLo /usr/local/lib/docker/cli-plugins/docker-compose "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-linux-${BUILDX_VERSION}.linux-${DOCKER_ARCH}" --create-dirs && \
+    curl -fLo /usr/local/lib/docker/cli-plugins/docker-compose "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-linux-${DOCKER_ARCH}" --create-dirs && \
     chmod -R 755 "/usr/local/lib/docker" && \
     ln -sv usr/local/lib/docker/cli-plugins/docker-compose /usr/local/bin/ && \
     docker -v && docker buildx version && docker compose version
