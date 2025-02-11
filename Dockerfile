@@ -4,7 +4,7 @@
 # see https://docs.docker.com/engine/reference/builder/#syntax
 
 # renovate: datasource=github-releases depName=dotnet/sdk
-ARG DOTNET_SDK_VERSION=9.0.102
+ARG DOTNET_SDK_VERSION=v9.0.200
 
 # https://mcr.microsoft.com/en-us/artifact/mar/dotnet/sdk/tags
 FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_SDK_VERSION}-bookworm-slim
