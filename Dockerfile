@@ -86,7 +86,7 @@ ARG BUILDX_VERSION=v0.20.1
 ARG DOCKER_VERSION=27.5.1
 # https://github.com/docker/compose/releases
 # renovate: datasource=github-releases depName=docker/compose
-ARG DOCKER_COMPOSE_VERSION=v2.32.4
+ARG DOCKER_COMPOSE_VERSION=v2.33.0
 ARG TARGETPLATFORM
 RUN <<EOF
   case ${TARGETPLATFORM} in
