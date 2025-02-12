@@ -3,8 +3,8 @@
 # see https://docs.docker.com/build/dockerfile/frontend/
 # see https://docs.docker.com/engine/reference/builder/#syntax
 
-# renovate: datasource=github-releases depName=dotnet/sdk
-ARG DOTNET_SDK_VERSION=v9.0.200
+# renovate: datasource=github-releases depName=dotnet/sdk extractVersion=^v(?<version>.*)$
+ARG DOTNET_SDK_VERSION=9.0.200
 
 # https://mcr.microsoft.com/en-us/artifact/mar/dotnet/sdk/tags
 FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_SDK_VERSION}-bookworm-slim
@@ -30,12 +30,14 @@ ENV DEBIAN_FRONTEND=noninteractive \
     BUILDKIT_PROGRESS=plain \
     DOCKER_BUILDKIT=1
 
-# renovate: datasource=github-releases depName=nodejs/node
+# https://github.com/nodejs/node/releases
+# renovate: datasource=github-releases depName=nodejs/node extractVersion=^v(?<version>.*)$
 ENV NODE_VERSION=23.7.0
 ENV PATH=${DOTNET_ROOT}:${DOTNET_ROOT}/tools:${NVM_DIR}/:${NVM_DIR}/versions/node/v${NODE_VERSION}/bin/:/root/.local/bin:/root/.dotnet/tools:${PATH}
 
 WORKDIR /tmp
 ### install git-lfs
+# https://github.com/git-lfs/git-lfs/releases
 # renovate: datasource=github-releases depName=git-lfs/git-lfs
 ARG GIT_LFS_VERSION=v3.6.1
 ARG TARGETPLATFORM
@@ -55,8 +57,9 @@ RUN case ${TARGETPLATFORM} in \
 
 ### install nvm & nodejs
 # https://github.com/nodejs/node/tags
-# renovate: datasource=github-releases depName=nodejs/node
+# renovate: datasource=github-releases depName=nodejs/node extractVersion=^v(?<version>.*)$
 ARG NODE_VERSION=23.7.0
+# https://github.com/nvm-sh/nvm/tags
 # renovate: datasource=github-releases depName=nvm-sh/nvm
 ARG NVM_VERSION=v0.40.1
 
@@ -81,6 +84,7 @@ RUN apt update -yq \
 # https://github.com/docker/buildx/tags
 # renovate: datasource=github-releases depName=docker/buildx
 ARG BUILDX_VERSION=v0.20.1
+# https://hub.docker.com/_/docker/tags
 # https://docs.docker.com/engine/release-notes
 # renovate: datasource=docker depName=docker.io/docker versioning=docker
 ARG DOCKER_VERSION=27.5.1

@@ -1,7 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "addLabels": [
-    "deps"
+    "deps",
+    "{{{manager}}}"
   ],
   "customManagers": [
     {
