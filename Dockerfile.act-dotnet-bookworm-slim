@@ -135,14 +135,14 @@ ENTRYPOINT ["/usr/bin/tini", "-g", "--"]
 ARG IMAGE_CREATED=2025-01-01T00:00:00Z
 ARG IMAGE_VERSION=0.1
 ARG IMAGE_REVISION=d3e3023f3938e174462239f855e615fd15e021bf
+# https://github.com/opencontainers/image-spec/blob/main/annotations.md
 LABEL org.opencontainers.image.created="${IMAGE_CREATED}" \
       org.opencontainers.image.authors="Vladimir Chirikov" \
-      org.opencontainers.image.url="https://github.com/vchirikov/act-docker-images" \
-      org.opencontainers.image.documentation="https://github.com/vchirikov/act-docker-images" \
-      org.opencontainers.image.source="https://github.com/vchirikov/act-docker-images" \
+      org.opencontainers.image.url="https://github.com/vchirikov/containers" \
+      org.opencontainers.image.documentation="https://github.com/vchirikov/containers" \
+      org.opencontainers.image.source="https://github.com/vchirikov/containers" \
       org.opencontainers.image.version="${IMAGE_VERSION}" \
       org.opencontainers.image.revision="${IMAGE_REVISION}" \
-      org.opencontainers.image.vendor="Vladimir Chirikov" \
       org.opencontainers.image.licenses="MIT" \
       org.opencontainers.image.title="act-dotnet-bookworm-slim" \
       org.opencontainers.image.description="Act/Gitea Actions runner docker image to run dotnet related workflows."

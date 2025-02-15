@@ -1,0 +1,52 @@
+# syntax=docker/dockerfile:1
+# see https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/reference.md#syntax
+# see https://docs.docker.com/build/dockerfile/frontend/
+# see https://docs.docker.com/engine/reference/builder/#syntax
+# see https://github.com/moby/buildkit/tags (tags: dockerfile/<version>)
+
+# build context is repo root
+FROM ubuntu:noble AS installer
+RUN <<EOF
+  apt update -yq
+  apt-get install -yq --no-install-recommends --no-install-suggests tini
+  apt-get clean
+  rm -rf /var/cache/* /var/log/* /var/lib/apt/lists/* /tmp/* || echo 'Failed to cleanup docker image'
+EOF
+
+# https://mcr.microsoft.com/en-us/artifact/mar/dotnet/aspnet/tags
+# renovate: datasource=github-releases depName=dotnet/aspnetcore extractVersion=^v(?<version>.*)$
+ARG DOTNET_ASPNETCORE_VERSION=9.0.2
+FROM mcr.microsoft.com/dotnet/aspnet:${DOTNET_ASPNETCORE_VERSION}-noble-chiseled-extra AS runtime
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1 \
+  DOTNET_CLI_UI_LANGUAGE=en-US \
+  DOTNET_SVCUTIL_TELEMETRY_OPTOUT=1 \
+  DOTNET_NOLOGO=1 \
+  POWERSHELL_TELEMETRY_OPTOUT=1 \
+  POWERSHELL_UPDATECHECK_OPTOUT=1 \
+  DOTNET_ROLL_FORWARD=Major \
+  DOTNET_ROLL_FORWARD_TO_PRERELEASE=1 \
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
+  DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+WORKDIR /app
+COPY --link --chown=app:app --chmod=755 --from=installer /usr/bin/tini /usr/bin/tini
+
+# note: we use single process signal forwarding (so you must forward process ending by your code)
+# use `-g` for [process-group-killing](https://github.com/krallin/tini?tab=readme-ov-file#process-group-killing)
+ENTRYPOINT ["/usr/bin/tini", "--"]
+CMD ["dotnet", "--info"]
+
+ARG IMAGE_CREATED=2025-01-01T00:00:00Z
+ARG IMAGE_VERSION=0.1
+ARG IMAGE_REVISION=d3e3023f3938e174462239f855e615fd15e021bf
+# https://github.com/opencontainers/image-spec/blob/main/annotations.md
+LABEL org.opencontainers.image.created="${IMAGE_CREATED}" \
+      org.opencontainers.image.authors="Vladimir Chirikov" \
+      org.opencontainers.image.url="https://github.com/vchirikov/containers" \
+      org.opencontainers.image.documentation="https://github.com/vchirikov/containers" \
+      org.opencontainers.image.source="https://github.com/vchirikov/containers" \
+      org.opencontainers.image.version="${IMAGE_VERSION}" \
+      org.opencontainers.image.revision="${IMAGE_REVISION}" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.title="dotnet-aspnetcore-base" \
+      org.opencontainers.image.description="Base docker image for aspnetcore apps with tini on board. Based on noble-chiseled-extra official image (trimmed ubuntu 24.04 with icu, tzdata)"
+

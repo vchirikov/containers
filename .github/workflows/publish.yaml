@@ -95,12 +95,23 @@ jobs:
           echo "::error::The master branch ${{ steps.gh.outputs.branch }} must have a prerelease suffix in version.json: ${{ steps.nbgv.outputs.MajorMinorVersion }}"
           exit 1
 
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |-
+            act:
+              - 'Dockerfile.act-dotnet-bookworm-slim'
+            aspnetcore:
+              - 'Dockerfile.dotnet-aspnetcore-base'
+
       - name: Set up Docker Buildx
+        if: ${{ steps.changes.outputs.act == 'true' || steps.changes.outputs.aspnetcore == 'true' }}
         uses: docker/setup-buildx-action@f7ce87c1d6bead3e36075b2ce75da1f6cc28aaca # v3
         with:
           platforms: linux/amd64,linux/arm64
 
       - name: Login to GitHub Container Registry
+        if: ${{ steps.changes.outputs.act == 'true' || steps.changes.outputs.aspnetcore == 'true' }}
         uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3
         with:
           registry: ghcr.io
@@ -108,15 +119,31 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: docker build & publish
-        id: publish
-        run: |-
+        if: ${{ steps.changes.outputs.act == 'true' }}
+        run: >-
           echo -e "\033[32mBuild & publish act-dotnet-bookworm-slim\033[0m"
-          docker buildx build --file Dockerfile . \
-          --platform=linux/amd64,linux/arm64 \
-          --build-arg IMAGE_CREATED=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
-          --build-arg IMAGE_REVISION=${{ steps.gh.outputs.sha }} \
-          --build-arg IMAGE_VERSION=${{ steps.nbgv.outputs.SemVer2 }} \
-          --provenance=false \
-          --compress \
-          --push \
+
+          docker buildx build --file Dockerfile.act-dotnet-bookworm-slim .
+          --platform=linux/amd64,linux/arm64
+          --build-arg IMAGE_CREATED=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          --build-arg IMAGE_REVISION=${{ steps.gh.outputs.sha }}
+          --build-arg IMAGE_VERSION=${{ steps.nbgv.outputs.SemVer2 }}
+          --provenance=false
+          --compress
+          --push
           -t ghcr.io/vchirikov/act-dotnet-bookworm-slim:${{ steps.nbgv.outputs.SemVer2 }}
+
+      - name: docker build & publish
+        if: ${{ steps.changes.outputs.act == 'true' }}
+        run: >-
+          echo -e "\033[32mBuild & publish act-dotnet-bookworm-slim\033[0m"
+
+          docker buildx build --file Dockerfile.dotnet-aspnetcore-base .
+          --platform=linux/amd64,linux/arm64
+          --build-arg IMAGE_CREATED=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          --build-arg IMAGE_REVISION=${{ steps.gh.outputs.sha }}
+          --build-arg IMAGE_VERSION=${{ steps.nbgv.outputs.SemVer2 }}
+          --provenance=false
+          --compress
+          --push
+          -t ghcr.io/vchirikov/dotnet-aspnetcore-base:${{ steps.nbgv.outputs.SemVer2 }}
