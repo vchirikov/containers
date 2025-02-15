@@ -105,13 +105,13 @@ jobs:
               - 'Dockerfile.dotnet-aspnetcore-base'
 
       - name: Set up Docker Buildx
-        if: ${{ steps.changes.outputs.act == 'true' || steps.changes.outputs.aspnetcore == 'true' }}
+        if: ${{ github.event_name == 'workflow_dispatch' || steps.changes.outputs.act == 'true' || steps.changes.outputs.aspnetcore == 'true' }}
         uses: docker/setup-buildx-action@f7ce87c1d6bead3e36075b2ce75da1f6cc28aaca # v3
         with:
           platforms: linux/amd64,linux/arm64
 
       - name: Login to GitHub Container Registry
-        if: ${{ steps.changes.outputs.act == 'true' || steps.changes.outputs.aspnetcore == 'true' }}
+        if: ${{ github.event_name == 'workflow_dispatch' || steps.changes.outputs.act == 'true' || steps.changes.outputs.aspnetcore == 'true' }}
         uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3
         with:
           registry: ghcr.io
@@ -119,7 +119,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: docker build & publish / act-dotnet-bookworm-slim
-        if: ${{ steps.changes.outputs.act == 'true' }}
+        if: ${{ github.event_name == 'workflow_dispatch' || steps.changes.outputs.act == 'true' }}
         run: >-
           echo -e "\033[32mBuild & publish act-dotnet-bookworm-slim\033[0m"
 
@@ -134,7 +134,7 @@ jobs:
           -t ghcr.io/vchirikov/act-dotnet-bookworm-slim:${{ steps.nbgv.outputs.SemVer2 }}
 
       - name: docker build & publish / dotnet-aspnetcore-base
-        if: ${{ steps.changes.outputs.act == 'true' }}
+        if: ${{ github.event_name == 'workflow_dispatch' || steps.changes.outputs.act == 'true' }}
         run: >-
           echo -e "\033[32mBuild & publish dotnet-aspnetcore-base\033[0m"
 
