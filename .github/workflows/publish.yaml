@@ -118,7 +118,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: docker build & publish
+      - name: docker build & publish / act-dotnet-bookworm-slim
         if: ${{ steps.changes.outputs.act == 'true' }}
         run: >-
           echo -e "\033[32mBuild & publish act-dotnet-bookworm-slim\033[0m"
@@ -133,10 +133,10 @@ jobs:
           --push
           -t ghcr.io/vchirikov/act-dotnet-bookworm-slim:${{ steps.nbgv.outputs.SemVer2 }}
 
-      - name: docker build & publish
+      - name: docker build & publish / dotnet-aspnetcore-base
         if: ${{ steps.changes.outputs.act == 'true' }}
         run: >-
-          echo -e "\033[32mBuild & publish act-dotnet-bookworm-slim\033[0m"
+          echo -e "\033[32mBuild & publish dotnet-aspnetcore-base\033[0m"
 
           docker buildx build --file Dockerfile.dotnet-aspnetcore-base .
           --platform=linux/amd64,linux/arm64

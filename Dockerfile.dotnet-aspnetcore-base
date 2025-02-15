@@ -4,6 +4,10 @@
 # see https://docs.docker.com/engine/reference/builder/#syntax
 # see https://github.com/moby/buildkit/tags (tags: dockerfile/<version>)
 
+# https://mcr.microsoft.com/en-us/artifact/mar/dotnet/aspnet/tags
+# renovate: datasource=github-releases depName=dotnet/aspnetcore extractVersion=^v(?<version>.*)$
+ARG DOTNET_ASPNETCORE_VERSION=9.0.2
+
 # build context is repo root
 FROM ubuntu:noble AS installer
 RUN <<EOF
