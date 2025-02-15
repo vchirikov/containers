@@ -2,6 +2,7 @@
 # see https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/reference.md#syntax
 # see https://docs.docker.com/build/dockerfile/frontend/
 # see https://docs.docker.com/engine/reference/builder/#syntax
+# see https://github.com/moby/buildkit/tags (tags: dockerfile/<version>)
 
 # renovate: datasource=github-releases depName=dotnet/sdk extractVersion=^v(?<version>.*)$
 ARG DOTNET_SDK_VERSION=9.0.200
@@ -71,14 +72,17 @@ RUN curl https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh 
     && node --version && npm --version && npx --version
 
 ### install packages
-RUN apt update -yq \
-    && apt install -yq --no-install-recommends --no-install-suggests \
-    sudo \
-    lsb-release \
-    openssh-client \
-    jq \
-    zip \
-    unzip
+RUN <<EOF
+  apt update -yq
+  apt-get install -yq --no-install-recommends --no-install-suggests \
+   tini \
+   sudo \
+   lsb-release \
+   openssh-client \
+   jq \
+   zip \
+   unzip ;
+EOF
 
 ### install docker
 # https://github.com/docker/buildx/tags
@@ -125,6 +129,8 @@ RUN dotnet tool install -g dotnet-ef --version ${DOTNET_TOOL_EF_VERSION} && \
 ### cleanup
 RUN apt-get clean \
     && rm -rf /var/cache/* /var/log/* /var/lib/apt/lists/* /tmp/* || echo 'Failed to cleanup docker image'
+
+ENTRYPOINT ["/usr/bin/tini", "-g", "--"]
 
 ARG IMAGE_CREATED=2025-01-01T00:00:00Z
 ARG IMAGE_VERSION=0.1
