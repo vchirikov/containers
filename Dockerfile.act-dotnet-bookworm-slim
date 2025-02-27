@@ -134,7 +134,7 @@ ENTRYPOINT ["/usr/bin/tini", "-g", "--"]
 
 ARG IMAGE_CREATED=2025-01-01T00:00:00Z
 ARG IMAGE_VERSION=0.1
-ARG IMAGE_REVISION=d3e3023f3938e174462239f855e615fd15e021bf
+ARG IMAGE_REVISION=4b825dc642cb6eb9a060e54bf8d69288fbee4904
 # https://github.com/opencontainers/image-spec/blob/main/annotations.md
 LABEL org.opencontainers.image.created="${IMAGE_CREATED}" \
       org.opencontainers.image.authors="Vladimir Chirikov" \
