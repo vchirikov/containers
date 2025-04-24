@@ -62,7 +62,7 @@ RUN case ${TARGETPLATFORM} in \
 ARG NODE_VERSION=23.11.0
 # https://github.com/nvm-sh/nvm/tags
 # renovate: datasource=github-releases depName=nvm-sh/nvm
-ARG NVM_VERSION=v0.40.2
+ARG NVM_VERSION=v0.40.3
 
 RUN curl https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh | bash \
     && . $NVM_DIR/nvm.sh \
