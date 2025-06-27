@@ -40,7 +40,7 @@ WORKDIR /tmp
 ### install git-lfs
 # https://github.com/git-lfs/git-lfs/releases
 # renovate: datasource=github-releases depName=git-lfs/git-lfs
-ARG GIT_LFS_VERSION=v3.6.1
+ARG GIT_LFS_VERSION=v3.7.0
 ARG TARGETPLATFORM
 RUN case ${TARGETPLATFORM} in \
         "linux/amd64") GIT_LFS_ARCH=amd64 ;; \
