@@ -33,7 +33,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 # https://github.com/nodejs/node/releases
 # renovate: datasource=github-releases depName=nodejs/node extractVersion=^v(?<version>.*)$
-ENV NODE_VERSION=24.4.1
+ENV NODE_VERSION=24.5.0
 ENV PATH=${DOTNET_ROOT}:${DOTNET_ROOT}/tools:${NVM_DIR}/:${NVM_DIR}/versions/node/v${NODE_VERSION}/bin/:/root/.local/bin:/root/.dotnet/tools:${PATH}
 
 WORKDIR /tmp
@@ -59,7 +59,7 @@ RUN case ${TARGETPLATFORM} in \
 ### install nvm & nodejs
 # https://github.com/nodejs/node/tags
 # renovate: datasource=github-releases depName=nodejs/node extractVersion=^v(?<version>.*)$
-ARG NODE_VERSION=24.4.1
+ARG NODE_VERSION=24.5.0
 # https://github.com/nvm-sh/nvm/tags
 # renovate: datasource=github-releases depName=nvm-sh/nvm
 ARG NVM_VERSION=v0.40.3
