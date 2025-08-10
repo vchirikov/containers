@@ -30,7 +30,7 @@ RUN  <<EOF
   tar -xvf chisel.tar.gz -C /usr/bin/
   mkdir /rootfs
   chisel cut --release "ubuntu-$UBUNTU_RELEASE" --root /rootfs busybox_bins
-  /rootfs/bin/busybox --install /rootfs/bin
+  /rootfs/usr/bin/busybox --install /rootfs/usr/bin
 EOF
 
 
