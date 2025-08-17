@@ -5,7 +5,7 @@
 # see https://github.com/moby/buildkit/tags (tags: dockerfile/<version>)
 
 # renovate: datasource=github-releases depName=dotnet/sdk extractVersion=^v(?<version>.*)$
-ARG DOTNET_SDK_VERSION=9.0.301
+ARG DOTNET_SDK_VERSION=9.0.304
 
 # https://mcr.microsoft.com/en-us/artifact/mar/dotnet/sdk/tags
 FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_SDK_VERSION}-bookworm-slim
