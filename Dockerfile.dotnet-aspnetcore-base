@@ -6,7 +6,7 @@
 
 # https://mcr.microsoft.com/en-us/artifact/mar/dotnet/aspnet/tags
 # renovate: datasource=github-releases depName=dotnet/aspnetcore extractVersion=^v(?<version>.*)$
-ARG DOTNET_ASPNETCORE_VERSION=9.0.8
+ARG DOTNET_ASPNETCORE_VERSION=9.0.9
 # noble is 24.04
 ARG UBUNTU_RELEASE=24.04
 # renovate: datasource=github-releases depName=canonical/chisel extractVersion=^(?<version>.*)$
@@ -36,7 +36,7 @@ EOF
 
 # https://mcr.microsoft.com/en-us/artifact/mar/dotnet/aspnet/tags
 # renovate: datasource=github-releases depName=dotnet/aspnetcore extractVersion=^v(?<version>.*)$
-ARG DOTNET_ASPNETCORE_VERSION=9.0.8
+ARG DOTNET_ASPNETCORE_VERSION=9.0.9
 FROM mcr.microsoft.com/dotnet/aspnet:${DOTNET_ASPNETCORE_VERSION}-noble-chiseled-extra AS runtime
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=1 \
   DOTNET_CLI_UI_LANGUAGE=en-US \
