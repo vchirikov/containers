@@ -5,10 +5,10 @@
 # see https://github.com/moby/buildkit/tags (tags: dockerfile/<version>)
 
 # renovate: datasource=github-releases depName=dotnet/sdk extractVersion=^v(?<version>.*)$
-ARG DOTNET_SDK_VERSION=9.0.305
+ARG DOTNET_SDK_VERSION=10.0.100-rc.1
 
 # https://mcr.microsoft.com/en-us/artifact/mar/dotnet/sdk/tags
-FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_SDK_VERSION}-bookworm-slim
+FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_SDK_VERSION}-noble
 ENV DEBIAN_FRONTEND=noninteractive \
     ASTRO_TELEMETRY_DISABLED=1 \
     NEXT_TELEMETRY_DISABLED=1 \
@@ -116,7 +116,7 @@ EOF
 
 ### install dotnet tools
 # renovate: datasource=nuget depName=dotnet-ef
-ARG DOTNET_TOOL_EF_VERSION=9.0.9
+ARG DOTNET_TOOL_EF_VERSION=10.0.0-rc.1.25451.107
 # renovate: datasource=nuget depName=nbgv
 ARG DOTNET_TOOL_NBGV_VERSION=3.7.115
 # renovate: datasource=nuget depName=nswag.consolecore
@@ -144,5 +144,5 @@ LABEL org.opencontainers.image.created="${IMAGE_CREATED}" \
       org.opencontainers.image.version="${IMAGE_VERSION}" \
       org.opencontainers.image.revision="${IMAGE_REVISION}" \
       org.opencontainers.image.licenses="MIT" \
-      org.opencontainers.image.title="act-dotnet-bookworm-slim" \
+      org.opencontainers.image.title="act-dotnet-noble" \
       org.opencontainers.image.description="Act/Gitea Actions runner docker image to run dotnet related workflows."

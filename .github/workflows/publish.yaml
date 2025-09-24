@@ -100,7 +100,7 @@ jobs:
         with:
           filters: |-
             act:
-              - 'Dockerfile.act-dotnet-bookworm-slim'
+              - 'Dockerfile.act-dotnet-noble'
             aspnetcore:
               - 'Dockerfile.dotnet-aspnetcore-base'
 
@@ -118,12 +118,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: docker build & publish / act-dotnet-bookworm-slim
+      - name: docker build & publish / act-dotnet-noble
         if: ${{ github.event_name == 'workflow_dispatch' || steps.changes.outputs.act == 'true' }}
         run: >-
-          echo -e "\033[32mBuild & publish act-dotnet-bookworm-slim\033[0m"
+          echo -e "\033[32mBuild & publish act-dotnet-noble\033[0m"
 
-          docker buildx build --file Dockerfile.act-dotnet-bookworm-slim .
+          docker buildx build --file Dockerfile.act-dotnet-noble .
           --platform=linux/amd64,linux/arm64
           --build-arg IMAGE_CREATED=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
           --build-arg IMAGE_REVISION=${{ steps.gh.outputs.sha }}
@@ -131,7 +131,7 @@ jobs:
           --provenance=false
           --compress
           --push
-          -t ghcr.io/vchirikov/act-dotnet-bookworm-slim:${{ steps.nbgv.outputs.SemVer2 }}
+          -t ghcr.io/vchirikov/act-dotnet-noble:${{ steps.nbgv.outputs.SemVer2 }}
 
       - name: docker build & publish / dotnet-aspnetcore-base
         if: ${{ github.event_name == 'workflow_dispatch' || steps.changes.outputs.act == 'true' }}
