@@ -10,7 +10,7 @@ ARG DOTNET_ASPNETCORE_VERSION=10.0.0-rc.1
 # noble is 24.04
 ARG UBUNTU_RELEASE=24.04
 # renovate: datasource=github-releases depName=canonical/chisel extractVersion=^(?<version>.*)$
-ARG CHISEL_VERSION=v1.2.0
+ARG CHISEL_VERSION=v1.3.0
 
 
 # build context is repo root
