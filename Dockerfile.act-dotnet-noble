@@ -118,7 +118,7 @@ EOF
 # renovate: datasource=nuget depName=dotnet-ef
 ARG DOTNET_TOOL_EF_VERSION=10.0.0-rc.2.25502.107
 # renovate: datasource=nuget depName=nbgv
-ARG DOTNET_TOOL_NBGV_VERSION=3.8.118
+ARG DOTNET_TOOL_NBGV_VERSION=3.9.50
 # renovate: datasource=nuget depName=nswag.consolecore
 ARG DOTNET_TOOL_NSWAG_VERSION=14.6.1
 RUN dotnet tool install -g dotnet-ef --version ${DOTNET_TOOL_EF_VERSION} && \
