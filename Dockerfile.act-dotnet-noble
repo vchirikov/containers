@@ -5,8 +5,9 @@
 # see https://github.com/moby/buildkit/tags (tags: dockerfile/<version>)
 
 # renovate: datasource=github-releases depName=dotnet/sdk extractVersion=^v(?<version>.*)$
-ARG DOTNET_SDK_VERSION=10.0.100-rc.1
+ARG DOTNET_SDK_VERSION=10.0.100
 
+# noble is 24.04
 # https://mcr.microsoft.com/en-us/artifact/mar/dotnet/sdk/tags
 FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_SDK_VERSION}-noble
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -33,7 +34,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 # https://github.com/nodejs/node/releases
 # renovate: datasource=github-releases depName=nodejs/node extractVersion=^v(?<version>.*)$
-ENV NODE_VERSION=25.2.0
+ENV NODE_VERSION=25.2.1
 ENV PATH=${DOTNET_ROOT}:${DOTNET_ROOT}/tools:${NVM_DIR}/:${NVM_DIR}/versions/node/v${NODE_VERSION}/bin/:/root/.local/bin:/root/.dotnet/tools:${PATH}
 
 WORKDIR /tmp
@@ -59,7 +60,7 @@ RUN case ${TARGETPLATFORM} in \
 ### install nvm & nodejs
 # https://github.com/nodejs/node/tags
 # renovate: datasource=github-releases depName=nodejs/node extractVersion=^v(?<version>.*)$
-ARG NODE_VERSION=25.2.0
+ARG NODE_VERSION=25.2.1
 # https://github.com/nvm-sh/nvm/tags
 # renovate: datasource=github-releases depName=nvm-sh/nvm
 ARG NVM_VERSION=v0.40.3
@@ -87,14 +88,14 @@ EOF
 ### install docker
 # https://github.com/docker/buildx/tags
 # renovate: datasource=github-releases depName=docker/buildx
-ARG BUILDX_VERSION=v0.30.0
+ARG BUILDX_VERSION=v0.30.1
 # https://hub.docker.com/_/docker/tags
 # https://docs.docker.com/engine/release-notes
 # renovate: datasource=docker depName=docker.io/docker versioning=docker
-ARG DOCKER_VERSION=28.5.1
+ARG DOCKER_VERSION=29.0.2
 # https://github.com/docker/compose/releases
 # renovate: datasource=github-releases depName=docker/compose
-ARG DOCKER_COMPOSE_VERSION=v2.40.1
+ARG DOCKER_COMPOSE_VERSION=v2.40.3
 ARG TARGETPLATFORM
 RUN <<EOF
   case ${TARGETPLATFORM} in
@@ -116,9 +117,9 @@ EOF
 
 ### install dotnet tools
 # renovate: datasource=nuget depName=dotnet-ef
-ARG DOTNET_TOOL_EF_VERSION=10.0.0-rc.2.25502.107
+ARG DOTNET_TOOL_EF_VERSION=10.0.0
 # renovate: datasource=nuget depName=nbgv
-ARG DOTNET_TOOL_NBGV_VERSION=3.8.118
+ARG DOTNET_TOOL_NBGV_VERSION=3.9.50
 # renovate: datasource=nuget depName=nswag.consolecore
 ARG DOTNET_TOOL_NSWAG_VERSION=14.6.3
 RUN dotnet tool install -g dotnet-ef --version ${DOTNET_TOOL_EF_VERSION} && \
