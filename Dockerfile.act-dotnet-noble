@@ -5,7 +5,7 @@
 # see https://github.com/moby/buildkit/tags (tags: dockerfile/<version>)
 
 # renovate: datasource=github-releases depName=dotnet/sdk extractVersion=^v(?<version>.*)$
-ARG DOTNET_SDK_VERSION=10.0.103
+ARG DOTNET_SDK_VERSION=10.0.200
 
 # noble is 24.04
 # https://mcr.microsoft.com/en-us/artifact/mar/dotnet/sdk/tags
