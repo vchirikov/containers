@@ -95,7 +95,7 @@ jobs:
           echo "::error::The master branch ${{ steps.gh.outputs.branch }} must have a prerelease suffix in version.json: ${{ steps.nbgv.outputs.MajorMinorVersion }}"
           exit 1
 
-      - uses: dorny/paths-filter@v3
+      - uses: dorny/paths-filter@v4
         id: changes
         with:
           filters: |-
