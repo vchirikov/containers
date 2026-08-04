@@ -5,7 +5,7 @@
 # see https://github.com/moby/buildkit/tags (tags: dockerfile/<version>)
 
 # renovate: datasource=github-releases depName=dotnet/sdk extractVersion=^v(?<version>.*)$
-ARG DOTNET_SDK_VERSION=10.0.200
+ARG DOTNET_SDK_VERSION=10.0.302
 
 # noble is 24.04
 # https://mcr.microsoft.com/en-us/artifact/mar/dotnet/sdk/tags
@@ -34,7 +34,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 # https://github.com/nodejs/node/releases
 # renovate: datasource=github-releases depName=nodejs/node extractVersion=^v(?<version>.*)$
-ENV NODE_VERSION=25.8.2
+ENV NODE_VERSION=26.6.0
 ENV PATH=${DOTNET_ROOT}:${DOTNET_ROOT}/tools:${NVM_DIR}/:${NVM_DIR}/versions/node/v${NODE_VERSION}/bin/:/root/.local/bin:/root/.dotnet/tools:${PATH}
 
 WORKDIR /tmp
@@ -60,7 +60,7 @@ RUN case ${TARGETPLATFORM} in \
 ### install nvm & nodejs
 # https://github.com/nodejs/node/tags
 # renovate: datasource=github-releases depName=nodejs/node extractVersion=^v(?<version>.*)$
-ARG NODE_VERSION=25.8.2
+ARG NODE_VERSION=26.6.0
 # https://github.com/nvm-sh/nvm/tags
 # renovate: datasource=github-releases depName=nvm-sh/nvm
 ARG NVM_VERSION=v0.40.6
@@ -95,7 +95,7 @@ ARG BUILDX_VERSION=v0.36.1
 ARG DOCKER_VERSION=29.7.1
 # https://github.com/docker/compose/releases
 # renovate: datasource=github-releases depName=docker/compose
-ARG DOCKER_COMPOSE_VERSION=v5.1.0
+ARG DOCKER_COMPOSE_VERSION=v5.4.0
 ARG TARGETPLATFORM
 RUN <<EOF
   case ${TARGETPLATFORM} in
@@ -117,11 +117,11 @@ EOF
 
 ### install dotnet tools
 # renovate: datasource=nuget depName=dotnet-ef
-ARG DOTNET_TOOL_EF_VERSION=10.0.0
+ARG DOTNET_TOOL_EF_VERSION=10.0.10
 # renovate: datasource=nuget depName=nbgv
-ARG DOTNET_TOOL_NBGV_VERSION=3.9.50
+ARG DOTNET_TOOL_NBGV_VERSION=3.10.91
 # renovate: datasource=nuget depName=nswag.consolecore
-ARG DOTNET_TOOL_NSWAG_VERSION=14.6.3
+ARG DOTNET_TOOL_NSWAG_VERSION=14.7.1
 RUN dotnet tool install -g dotnet-ef --version ${DOTNET_TOOL_EF_VERSION} && \
   dotnet tool install -g nbgv --version ${DOTNET_TOOL_NBGV_VERSION} && \
   dotnet tool install -g nswag.consolecore --version ${DOTNET_TOOL_NSWAG_VERSION}
