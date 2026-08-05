@@ -8,7 +8,7 @@
 # renovate: datasource=github-releases depName=dotnet/aspnetcore extractVersion=^v(?<version>.*)$
 ARG DOTNET_ASPNETCORE_VERSION=10.0.10
 # noble is 24.04
-ARG UBUNTU_RELEASE=24.04
+ARG UBUNTU_RELEASE=26.04
 # renovate: datasource=github-releases depName=canonical/chisel extractVersion=^(?<version>.*)$
 ARG CHISEL_VERSION=v1.4.2
 
